@@ -1,7 +1,11 @@
 import cv2
 
+
+rtsp_url = 'rtsp://username:password@camera_ip_address'
+
+
 # Capture video from the first camera device
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(rtsp_url)
 
 while True:
     # Capture frame-by-frame
@@ -10,7 +14,7 @@ while True:
         break
     
     # Display the resulting frame
-    cv2.imshow('Frame', frame)
+    cv2.imshow('Security Camera Feed', frame)
     
     # Break the loop when 'q' is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):
