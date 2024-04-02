@@ -1,42 +1,37 @@
 import cv2
 
-# Load the pre-trained Haar Cascade classifier for face detection
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# Start video capture from the webcam
-cap = cv2.VideoCapture(0)  # 0 is usually the default ID for the built-in webcam
+cap = cv2.VideoCapture(0)
 
 if not cap.isOpened():
     print("Error: Could not open video capture device.")
     exit()
 
-# Continuously capture frames from the webcam
-while True:
-    # Capture frame-by-frame
-    ret, frame = cap.read()
+image_counter = 0  # Counter for the image filenames
 
-    # Check if frame is captured
+while True:
+    ret, frame = cap.read()
+    
     if not ret:
         print("Error: Failed to capture frame.")
         break
 
-    # Convert the captured frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # Detect faces in the grayscale frame
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-    # Draw rectangles around the faces
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        face_img = frame[y:y+h, x:x+w]  # Crop the face
+        img_name = f"face_{image_counter}.png"
+        cv2.imwrite(img_name, face_img)  # Save the captured face
+        print(f"{img_name} saved.")  # Feedback to know that an image has been saved
+        image_counter += 1  # Increment the counter
 
-    # Display the resulting frame with faces highlighted
     cv2.imshow('Face Detection', frame)
 
-    # Break the loop when 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('q'):  # Press 'q' to quit
         break
 
-# When everything done, release the capture
 cap.release()
 cv2.destroyAllWindows()
